@@ -26,7 +26,6 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; transition: background-color 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; margin: 0; }
         
-        /* HEADER DENGAN JUMLAH DATA DI KIRI ATAS */
         .header {
             display: flex; flex-direction: column; align-items: center; 
             margin-bottom: 20px; position: relative; padding-top: 30px;
@@ -86,7 +85,6 @@
         .btn-copy { background-color: #28a745; } .btn-email { background-color: #17a2b8; } .btn-done { background-color: #6c757d; } .btn-done.active { background-color: #ffc107; color: #333; } .btn-delete { background-color: #dc3545; }
         .btn-restore { background-color: #28a745; flex: 1 1 100% !important; } .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
 
-        /* SISTEM PAGINATION AGAR TIDAK LAG */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%; }
         .btn-page { background: var(--primary-btn); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-page:disabled { background: #ccc; cursor: not-allowed; }
@@ -112,7 +110,7 @@
                 <button class="btn btn-backup" onclick="exportData()">💾 Backup</button>
                 <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📂 Import</button>
                 <input type="file" id="importFile" accept=".json" onchange="importData(event)">
-                <button class="btn btn-clear" onclick="bersihkanSemua()">🗑️ Bersihkan Input</button>
+                <button class="btn btn-clear" onclick="hapusSemuaData()">🗑️ Hapus Semua Data</button>
             </div>
         </div>
 
@@ -141,14 +139,13 @@
     <script>
         let currentTab = 'full';
         let currentPage = 1;
-        const itemsPerPage = 50; // Menampilkan 50 data per halaman agar layar HP tidak macet
+        const itemsPerPage = 50; 
 
         window.onload = function() {
             if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
             document.getElementById('inputText').value = localStorage.getItem('rawInput') || '';
             tampilkanOutput(); 
             
-            // Mendaftarkan Service Worker untuk PWA
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').then(() => console.log("PWA Active"));
             }
@@ -163,7 +160,6 @@
             localStorage.setItem('rawInput', this.value);
         });
 
-        // Reset halaman ke 1 setiap kali mencari data
         document.getElementById('searchInput').addEventListener('input', () => {
             currentPage = 1;
             tampilkanOutput();
@@ -171,7 +167,7 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            currentPage = 1; // Kembali ke halaman 1 saat ganti tab
+            currentPage = 1; 
             document.getElementById('btn-tab-full').classList.toggle('active', tab === 'full');
             document.getElementById('btn-tab-trimmed').classList.toggle('active', tab === 'trimmed');
             document.getElementById('btn-tab-trash').classList.toggle('active', tab === 'trash');
@@ -194,7 +190,7 @@
                 selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
             });
             localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-            currentPage = 1; // Otomatis ke halaman pertama untuk melihat data baru
+            currentPage = 1; 
             tampilkanOutput();
         }
 
@@ -205,17 +201,8 @@
 
             blocks.forEach((block) => {
                 let lines = block.trim().split('\n');
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i];
-                    if (line.toUpperCase().includes('N/A')) continue; 
-                    let dateMatch = line.match(/(\d{2}-\d{2}-\d{4}|\d{2}\/\d{2}\/\d{4})/);
-                    if (dateMatch) {
-                        let year = dateMatch[1].slice(-4);
-                        let place = line.replace(dateMatch[1], '').replace(/,/g, '').trim();
-                        lines[i] = `${place === '' ? 'TEMPAT' : place}, ${year}`;
-                        break; 
-                    }
-                }
+                
+                // Tanggal Lahir dan N/A akan dibiarkan utuh apa adanya.
 
                 let fullText = lines.join('\n');
                 let trimmedLines = [];
@@ -229,7 +216,6 @@
 
                 while(trimmedLines.length > 0 && trimmedLines[trimmedLines.length-1].trim() === '') trimmedLines.pop();
 
-                // Data tidak akan menimpa, tapi ditambahkan (Append)
                 arrayHasil.push({
                     id: Date.now() + Math.random(), fullText: fullText, trimmedText: trimmedLines.join('\n'),
                     selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
@@ -242,7 +228,6 @@
             if(currentTab === 'trash') switchTab('full'); else tampilkanOutput();
         }
 
-        // === ENGINE TAMPILAN DENGAN PAGINATION (ANTI LAG) ===
         function tampilkanOutput() {
             const outputArea = document.getElementById('outputArea');
             const paginationControls = document.getElementById('paginationControls');
@@ -255,16 +240,13 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterKat = document.getElementById('filterCategory').value;
 
-            // Filter Sampah & Kategori
             let arrayTampil = arrayHasil.filter(item => {
                 if (currentTab === 'trash') return item.deleted === true;
                 return item.deleted === false && (filterKat === 'Semua' || item.kategori === filterKat);
             });
 
-            // Update Counter Total Data di Kiri Atas
             updateCounter(arrayTampil.length);
 
-            // Pencarian & Pengurutan
             if (searchTerm !== '') {
                 arrayTampil = arrayTampil.filter(item => {
                     const targetText = currentTab === 'trimmed' ? item.trimmedText : item.fullText;
@@ -277,7 +259,6 @@
                 return a.selesai ? 1 : -1;
             });
 
-            // LOGIKA PAGINATION (Potong data sesuai halaman)
             const totalPages = Math.ceil(arrayTampil.length / itemsPerPage);
             if(currentPage > totalPages && totalPages > 0) currentPage = totalPages;
             
@@ -285,15 +266,12 @@
             const endIndex = startIndex + itemsPerPage;
             const paginatedItems = arrayTampil.slice(startIndex, endIndex);
 
-            // Render Hanya 50 Data Tersebut
             paginatedItems.forEach((item, index) => {
-                // ... (Pembuatan Kartu Persis Seperti Sebelumnya) ...
                 const card = document.createElement('div'); card.className = 'card';
                 if (item.selesai) card.classList.add('done');
 
                 const headerDiv = document.createElement('div'); headerDiv.className = 'card-header';
                 const numberBadge = document.createElement('div'); numberBadge.className = 'number-badge';
-                // Nomor asli disesuaikan dengan urutan global
                 const realIndex = startIndex + index + 1; 
                 numberBadge.innerText = item.selesai ? `${realIndex} (Selesai)` : `${realIndex}`;
                 
@@ -366,7 +344,6 @@
                 setTimeout(() => autoResize(textarea), 0);
             });
 
-            // Tampilkan Tombol Halaman (Pagination) di Bawah
             if(totalPages > 1) {
                 const btnPrev = document.createElement('button'); btnPrev.className = 'btn-page'; btnPrev.innerText = '⬅️ Sebelumnya';
                 btnPrev.disabled = currentPage === 1;
@@ -394,7 +371,21 @@
             reader.onload = e => { localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); tampilkanOutput(); alert('Berhasil dipulihkan!'); };
             reader.readAsText(event.target.files[0]);
         }
-        function bersihkanSemua() { if (confirm("Kosongkan kotak ketikan?")) { localStorage.removeItem('rawInput'); document.getElementById('inputText').value = ''; } }
+        
+        // === FUNGSI HAPUS SEMUA DATA DENGAN PIN ===
+        function hapusSemuaData() { 
+            const pin = prompt("PERINGATAN: Tindakan ini akan menghapus SELURUH data Anda secara permanen!\n\nMasukkan PIN '1234' untuk melanjutkan:");
+            
+            if (pin === "1234") {
+                localStorage.removeItem('rawInput');
+                localStorage.removeItem('processedData');
+                document.getElementById('inputText').value = '';
+                tampilkanOutput();
+                alert("Berhasil! Seluruh data telah dikosongkan.");
+            } else if (pin !== null) {
+                alert("PIN Salah! Penghapusan data dibatalkan.");
+            }
+        }
     </script>
 </body>
 </html>
