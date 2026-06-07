@@ -2,302 +2,176 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Perapian Data (Ultimate Edition)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#007bff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <title>CatatanKu</title>
     <style>
-        /* --- VARIABEL WARNA (TERANG & GELAP) --- */
         :root {
-            --bg-color: #f0f2f5;
-            --text-color: #333;
-            --card-bg: #fff;
-            --border-color: #ccc;
-            --input-bg: #fff;
-            --primary-btn: #007bff;
-            --badge-color: #007bff;
-            --header-desc: #666;
-            --tab-bg: #e9ecef;
-            --tab-active: #fff;
-            --done-bg: #e2fced;
+            --bg-color: #f0f2f5; --text-color: #333; --card-bg: #fff;
+            --border-color: #ccc; --input-bg: #fff; --primary-btn: #007bff;
+            --badge-color: #007bff; --header-desc: #666; --tab-bg: #e9ecef;
+            --tab-active: #fff; --done-bg: #e2fced;
         }
 
         body.dark-mode {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --card-bg: #1e1e1e;
-            --border-color: #444;
-            --input-bg: #2d2d2d;
-            --primary-btn: #375a7f;
-            --badge-color: #4da3ff;
-            --header-desc: #aaa;
-            --tab-bg: #2d2d2d;
-            --tab-active: #1e1e1e;
-            --done-bg: #1a3b26;
+            --bg-color: #121212; --text-color: #e0e0e0; --card-bg: #1e1e1e;
+            --border-color: #444; --input-bg: #2d2d2d; --primary-btn: #375a7f;
+            --badge-color: #4da3ff; --header-desc: #aaa; --tab-bg: #2d2d2d;
+            --tab-active: #1e1e1e; --done-bg: #1a3b26;
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-            margin: 0;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; margin: 0; }
         
-        /* HEADER & DARK MODE TOGGLE */
+        /* HEADER DENGAN JUMLAH DATA DI KIRI ATAS */
         .header {
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
+            display: flex; flex-direction: column; align-items: center; 
+            margin-bottom: 20px; position: relative; padding-top: 30px;
         }
-        .header p { color: var(--header-desc); margin: 0; font-size: 14px; }
+        .data-counter {
+            position: absolute; top: 0; left: 0;
+            background: var(--primary-btn); color: white;
+            padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
         .theme-toggle {
-            position: absolute;
-            top: 0; right: 0;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
+            position: absolute; top: 0; right: 0;
+            background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color);
+            padding: 8px 12px; border-radius: 20px; cursor: pointer; font-size: 14px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        .header h2 { margin: 0; font-size: 24px; color: var(--primary-btn); }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { display: flex; flex-direction: column; gap: 15px; max-width: 1200px; margin: 0 auto; }
 
-        /* INPUT SECTION */
-        .input-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .input-section, .tools-section { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         label { font-weight: bold; display: block; margin-bottom: 10px; }
         textarea.main-input {
-            width: 100%; height: 150px; padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px; resize: vertical; font-size: 14px;
-            background-color: var(--input-bg); color: var(--text-color);
+            width: 100%; height: 120px; padding: 12px; border: 1px solid var(--border-color);
+            border-radius: 6px; resize: vertical; font-size: 14px; background-color: var(--input-bg); color: var(--text-color);
         }
-        .button-group {
-            display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;
-        }
+        
+        .button-group, .tools-section { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .btn {
-            color: white; border: none; padding: 12px 20px;
-            font-size: 14px; border-radius: 6px; cursor: pointer;
-            font-weight: bold; flex: 1 1 calc(25% - 10px); min-width: 140px;
+            color: white; border: none; padding: 12px; font-size: 14px; border-radius: 6px; 
+            cursor: pointer; font-weight: bold; flex: 1 1 calc(50% - 10px); text-align: center;
         }
-        .btn-process { background-color: var(--primary-btn); }
-        .btn-clear { background-color: #dc3545; }
-        .btn-backup { background-color: #6f42c1; }
-        .btn-import { background-color: #17a2b8; }
+        .btn-process { background-color: var(--primary-btn); flex: 1 1 100%; }
+        .btn-clear { background-color: #dc3545; } .btn-backup { background-color: #6f42c1; } .btn-import { background-color: #17a2b8; }
 
-        /* SEARCH & FILTER SECTION */
-        .tools-section {
-            display: flex; flex-wrap: wrap; gap: 10px;
-            background: var(--card-bg); padding: 15px; border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .search-input {
-            flex: 2 1 300px; padding: 12px; font-size: 15px;
-            border: 2px solid var(--primary-btn); border-radius: 6px;
-            background-color: var(--input-bg); color: var(--text-color);
-        }
-        .filter-select {
-            flex: 1 1 150px; padding: 12px; border-radius: 6px;
-            border: 1px solid var(--border-color); background-color: var(--input-bg);
-            color: var(--text-color); font-weight: bold;
-        }
-        .btn-add-manual {
-            flex: 1 1 150px; background-color: #28a745; color: white;
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
+        .search-input { flex: 2 1 200px; padding: 12px; font-size: 15px; border: 2px solid var(--primary-btn); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); }
+        .filter-select { flex: 1 1 120px; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); font-weight: bold; }
+        .btn-add-manual { flex: 1 1 120px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; padding: 12px;}
 
-        /* TAB MENU */
-        .tab-menu {
-            display: flex; background: var(--card-bg);
-            border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .tab-btn {
-            flex: 1; padding: 12px; font-size: 14px; font-weight: bold;
-            background: var(--tab-bg); color: var(--text-color);
-            border: none; cursor: pointer; border-bottom: 4px solid transparent;
-        }
-        .tab-btn.active {
-            background: var(--tab-active); color: var(--primary-btn);
-            border-bottom: 4px solid var(--primary-btn);
-        }
+        .tab-menu { display: flex; background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .tab-btn { flex: 1; padding: 12px 5px; font-size: 13px; font-weight: bold; background: var(--tab-bg); color: var(--text-color); border: none; cursor: pointer; border-bottom: 4px solid transparent; }
+        .tab-btn.active { background: var(--tab-active); color: var(--primary-btn); border-bottom: 4px solid var(--primary-btn); }
 
-        /* OUTPUT SECTION */
-        .output-section {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;
-        }
-        
-        .card {
-            background: var(--card-bg); padding: 15px; border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column;
-        }
+        .output-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .card.done { background-color: var(--done-bg); border: 1px solid #28a745; }
-
-        .card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color);
-        }
-        .number-badge {
-            font-size: 16px; font-weight: bold; color: var(--badge-color);
-        }
-        .category-select {
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;
-            border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color);
-        }
-
-        .card textarea {
-            width: 100%; min-height: 120px; padding: 10px;
-            border: 1px solid var(--border-color); border-radius: 6px;
-            background-color: var(--input-bg); color: var(--text-color);
-            overflow: hidden; resize: none; font-family: monospace;
-            font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4;
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); }
+        .number-badge { font-size: 16px; font-weight: bold; color: var(--badge-color); }
+        .category-select { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); }
         
+        .card textarea { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); overflow: hidden; resize: none; font-family: monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4; }
         .card textarea.email-copied { background-color: #fffacc !important; color: #000 !important; border-color: #ffc107 !important; }
         .card textarea.trimmed-copied { background-color: #e6f7ff !important; color: #000 !important; border-color: #007bff !important; }
         
         .card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-        .card-actions button {
-            color: white; border: none; padding: 8px; border-radius: 6px;
-            cursor: pointer; font-weight: bold; font-size: 12px; flex: 1 1 calc(50% - 8px);
-        }
-        
-        .btn-copy { background-color: #28a745; }
-        .btn-email { background-color: #17a2b8; }
-        .btn-done { background-color: #6c757d; }
-        .btn-done.active { background-color: #ffc107; color: #333; }
-        .btn-delete { background-color: #dc3545; }
-        
-        /* Tombol Khusus Trash */
-        .btn-restore { background-color: #28a745; flex: 1 1 100% !important; }
-        .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
+        .card-actions button { color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; flex: 1 1 calc(50% - 8px); }
+        .btn-copy { background-color: #28a745; } .btn-email { background-color: #17a2b8; } .btn-done { background-color: #6c757d; } .btn-done.active { background-color: #ffc107; color: #333; } .btn-delete { background-color: #dc3545; }
+        .btn-restore { background-color: #28a745; flex: 1 1 100% !important; } .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
 
-        /* Sembunyikan input file */
+        /* SISTEM PAGINATION AGAR TIDAK LAG */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; width: 100%; }
+        .btn-page { background: var(--primary-btn); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-page:disabled { background: #ccc; cursor: not-allowed; }
+        .page-info { font-weight: bold; color: var(--text-color); }
+
         #importFile { display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>Aplikasi Catatan & Perapian Data</h2>
-        <p>Ultimate Edition: Backup, Trash, Dark Mode & Kategori</p>
+        <div id="dataCounter" class="data-counter">📊 Total: 0 Data</div>
         <button class="theme-toggle" onclick="toggleTheme()">☀️/🌙</button>
+        <h2>CatatanKu</h2>
     </div>
 
     <div class="container">
         <div class="input-section">
-            <label for="inputText">Tempelkan Data Mentah di Sini:</label>
-            <textarea id="inputText" class="main-input" placeholder="[2/6, 03.24] Putri: *OGAN ILIR..."></textarea>
-            
+            <label for="inputText">Tempelkan Data (Maksimal 500 per Proses):</label>
+            <textarea id="inputText" class="main-input" placeholder="Tempelkan data di sini..."></textarea>
             <div class="button-group">
                 <button class="btn btn-process" onclick="prosesData()">✨ Rapihkan Data</button>
-                <button class="btn btn-backup" onclick="exportData()">💾 Download Backup</button>
-                <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📂 Import Data</button>
+                <button class="btn btn-backup" onclick="exportData()">💾 Backup</button>
+                <button class="btn btn-import" onclick="document.getElementById('importFile').click()">📂 Import</button>
                 <input type="file" id="importFile" accept=".json" onchange="importData(event)">
-                <button class="btn btn-clear" onclick="bersihkanSemua()">🗑️ Kosongkan Input</button>
+                <button class="btn btn-clear" onclick="bersihkanSemua()">🗑️ Bersihkan Input</button>
             </div>
         </div>
 
         <div class="tools-section">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari daerah, nama, NIK...">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari NIK/Nama...">
             <select id="filterCategory" class="filter-select" onchange="tampilkanOutput()">
                 <option value="Semua">Semua Kategori</option>
                 <option value="Umum">Umum</option>
                 <option value="Penting">Penting</option>
                 <option value="Tunda">Tunda</option>
             </select>
-            <button class="btn-add-manual" onclick="tambahManual()">➕ Tambah Manual</button>
+            <button class="btn-add-manual" onclick="tambahManual()">➕ Manual</button>
         </div>
 
         <div class="tab-menu">
-            <button class="tab-btn active" id="btn-tab-full" onclick="switchTab('full')">📑 Data Full</button>
-            <button class="tab-btn" id="btn-tab-trimmed" onclick="switchTab('trimmed')">✂️ Data Potongan</button>
-            <button class="tab-btn" id="btn-tab-trash" onclick="switchTab('trash')">🗑️ Tong Sampah</button>
+            <button class="tab-btn active" id="btn-tab-full" onclick="switchTab('full')">📑 Full</button>
+            <button class="tab-btn" id="btn-tab-trimmed" onclick="switchTab('trimmed')">✂️ Potongan</button>
+            <button class="tab-btn" id="btn-tab-trash" onclick="switchTab('trash')">🗑️ Sampah</button>
         </div>
 
         <div class="output-section" id="outputArea"></div>
+        
+        <div class="pagination" id="paginationControls"></div>
     </div>
 
     <script>
         let currentTab = 'full';
+        let currentPage = 1;
+        const itemsPerPage = 50; // Menampilkan 50 data per halaman agar layar HP tidak macet
 
         window.onload = function() {
-            // Load Theme
-            if(localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-            }
-            // Load Input Mentah
-            const savedRawInput = localStorage.getItem('rawInput');
-            if (savedRawInput) document.getElementById('inputText').value = savedRawInput;
-            
+            if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+            document.getElementById('inputText').value = localStorage.getItem('rawInput') || '';
             tampilkanOutput(); 
+            
+            // Mendaftarkan Service Worker untuk PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').then(() => console.log("PWA Active"));
+            }
         };
 
-        // === FITUR DARK MODE ===
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
 
-        // === FITUR BACKUP & IMPORT ===
-        function exportData() {
-            const data = localStorage.getItem('processedData');
-            if (!data || data === "[]") return alert("Tidak ada data untuk di-backup!");
-            
-            const blob = new Blob([data], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Backup_Data_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    localStorage.setItem('processedData', JSON.stringify(importedData));
-                    tampilkanOutput();
-                    alert('✅ Data berhasil dipulihkan dari Backup!');
-                } catch(err) {
-                    alert('❌ File tidak valid!');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Sinkronisasi Tab Browser
-        window.addEventListener('storage', function(event) {
-            if (event.key === 'processedData') tampilkanOutput();
-            if (event.key === 'rawInput') document.getElementById('inputText').value = event.newValue || '';
-        });
-
         document.getElementById('inputText').addEventListener('input', function() {
             localStorage.setItem('rawInput', this.value);
         });
 
-        document.getElementById('searchInput').addEventListener('input', tampilkanOutput);
+        // Reset halaman ke 1 setiap kali mencari data
+        document.getElementById('searchInput').addEventListener('input', () => {
+            currentPage = 1;
+            tampilkanOutput();
+        });
 
         function switchTab(tab) {
             currentTab = tab;
+            currentPage = 1; // Kembali ke halaman 1 saat ganti tab
             document.getElementById('btn-tab-full').classList.toggle('active', tab === 'full');
             document.getElementById('btn-tab-trimmed').classList.toggle('active', tab === 'trimmed');
             document.getElementById('btn-tab-trash').classList.toggle('active', tab === 'trash');
@@ -309,46 +183,36 @@
             textarea.style.height = textarea.scrollHeight + 'px'; 
         }
 
-        // === FITUR TAMBAH MANUAL ===
+        function updateCounter(total) {
+            document.getElementById('dataCounter').innerText = `📊 Total: ${total} Data`;
+        }
+
         function tambahManual() {
             let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || [];
-            
-            arrayHasil.unshift({ // Masukkan ke urutan paling atas
-                id: Date.now() + Math.random(), 
-                fullText: "DATA BARU\nKetik di sini...",
-                trimmedText: "DATA BARU\nKetik di sini...",
-                selesai: false,
-                emailCopied: false,
-                trimmedCopied: false,
-                kategori: 'Umum',
-                deleted: false
+            arrayHasil.unshift({
+                id: Date.now(), fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...",
+                selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
             });
-            
             localStorage.setItem('processedData', JSON.stringify(arrayHasil));
+            currentPage = 1; // Otomatis ke halaman pertama untuk melihat data baru
             tampilkanOutput();
         }
 
-        // === PROSES DATA MENTAH ===
         function prosesData() {
             const rawText = document.getElementById('inputText').value;
             const blocks = rawText.split(/\[[^\]]+\]\s*[^:]+:\s*/).filter(b => b.trim() !== '');
-            
-            // Ambil data yang sudah ada agar tidak tertimpa saat memproses tumpukan baru
             let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || [];
 
             blocks.forEach((block) => {
                 let lines = block.trim().split('\n');
-
                 for (let i = 0; i < lines.length; i++) {
                     let line = lines[i];
                     if (line.toUpperCase().includes('N/A')) continue; 
-
                     let dateMatch = line.match(/(\d{2}-\d{2}-\d{4}|\d{2}\/\d{2}\/\d{4})/);
                     if (dateMatch) {
                         let year = dateMatch[1].slice(-4);
                         let place = line.replace(dateMatch[1], '').replace(/,/g, '').trim();
-                        if (place === '') place = 'TEMPAT';
-                        lines[i] = `${place}, ${year}`;
+                        lines[i] = `${place === '' ? 'TEMPAT' : place}, ${year}`;
                         break; 
                     }
                 }
@@ -358,274 +222,179 @@
                 let stopAdding = false;
                 
                 for(let i = 0; i < lines.length; i++) {
-                    let line = lines[i];
-                    if (/\S+@\S+\.\S+/.test(line)) stopAdding = true;
+                    if (/\S+@\S+\.\S+/.test(lines[i])) stopAdding = true;
                     if (stopAdding) continue;
-
-                    if (/^\d{16}$/.test(line.trim())) {
-                        trimmedLines.push(line.trim().substring(0, 6));
-                    } else {
-                        trimmedLines.push(line);
-                    }
+                    trimmedLines.push(/^\d{16}$/.test(lines[i].trim()) ? lines[i].trim().substring(0, 6) : lines[i]);
                 }
 
-                while(trimmedLines.length > 0 && trimmedLines[trimmedLines.length-1].trim() === '') {
-                    trimmedLines.pop();
-                }
+                while(trimmedLines.length > 0 && trimmedLines[trimmedLines.length-1].trim() === '') trimmedLines.pop();
 
+                // Data tidak akan menimpa, tapi ditambahkan (Append)
                 arrayHasil.push({
-                    id: Date.now() + Math.random(), 
-                    fullText: fullText,
-                    trimmedText: trimmedLines.join('\n'),
-                    selesai: false,
-                    emailCopied: false,
-                    trimmedCopied: false,
-                    kategori: 'Umum', // Kategori default
-                    deleted: false    // Status Recycle Bin
+                    id: Date.now() + Math.random(), fullText: fullText, trimmedText: trimmedLines.join('\n'),
+                    selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
                 });
             });
 
             localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-            document.getElementById('inputText').value = ''; // Kosongkan input otomatis
+            document.getElementById('inputText').value = ''; 
             localStorage.removeItem('rawInput');
-            
-            // Pindah otomatis ke Tab Data Full jika sedang di Trash
-            if(currentTab === 'trash') switchTab('full');
-            else tampilkanOutput();
+            if(currentTab === 'trash') switchTab('full'); else tampilkanOutput();
         }
 
-        // === TAMPILKAN OUTPUT ===
+        // === ENGINE TAMPILAN DENGAN PAGINATION (ANTI LAG) ===
         function tampilkanOutput() {
             const outputArea = document.getElementById('outputArea');
-            outputArea.innerHTML = ''; 
+            const paginationControls = document.getElementById('paginationControls');
+            outputArea.innerHTML = ''; paginationControls.innerHTML = '';
 
             const savedData = localStorage.getItem('processedData');
-            if (!savedData) return;
+            if (!savedData) { updateCounter(0); return; }
 
             let arrayHasil = JSON.parse(savedData);
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterKat = document.getElementById('filterCategory').value;
 
-            // 1. FILTER BERDASARKAN STATUS TONG SAMPAH
+            // Filter Sampah & Kategori
             let arrayTampil = arrayHasil.filter(item => {
-                // Pastikan item lawas tidak error
-                item.deleted = item.deleted || false; 
-                item.kategori = item.kategori || 'Umum';
-
                 if (currentTab === 'trash') return item.deleted === true;
-                return item.deleted === false;
+                return item.deleted === false && (filterKat === 'Semua' || item.kategori === filterKat);
             });
 
-            // 2. FILTER KATEGORI (Hanya jika bukan di Trash)
-            if (currentTab !== 'trash' && filterKat !== 'Semua') {
-                arrayTampil = arrayTampil.filter(item => item.kategori === filterKat);
+            // Update Counter Total Data di Kiri Atas
+            updateCounter(arrayTampil.length);
+
+            // Pencarian & Pengurutan
+            if (searchTerm !== '') {
+                arrayTampil = arrayTampil.filter(item => {
+                    const targetText = currentTab === 'trimmed' ? item.trimmedText : item.fullText;
+                    return targetText.toLowerCase().includes(searchTerm);
+                });
             }
 
-            // 3. PENGURUTAN (A-Z)
             arrayTampil.sort((a, b) => {
                 if (a.selesai === b.selesai) return a.fullText.localeCompare(b.fullText); 
                 return a.selesai ? 1 : -1;
             });
 
-            // 4. PENCARIAN
-            if (searchTerm !== '') {
-                arrayTampil = arrayTampil.filter(item => {
-                    const targetText = currentTab === 'trimmed' ? item.trimmedText : item.fullText;
-                    const barisPertama = targetText.split('\n')[0].replace(/\*/g, '').trim().toLowerCase();
-                    if (searchTerm.length <= 2) return barisPertama.startsWith(searchTerm);
-                    return barisPertama.startsWith(searchTerm) || targetText.toLowerCase().includes(searchTerm);
-                });
-            }
+            // LOGIKA PAGINATION (Potong data sesuai halaman)
+            const totalPages = Math.ceil(arrayTampil.length / itemsPerPage);
+            if(currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedItems = arrayTampil.slice(startIndex, endIndex);
 
-            arrayTampil.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'card';
+            // Render Hanya 50 Data Tersebut
+            paginatedItems.forEach((item, index) => {
+                // ... (Pembuatan Kartu Persis Seperti Sebelumnya) ...
+                const card = document.createElement('div'); card.className = 'card';
                 if (item.selesai) card.classList.add('done');
 
-                // KEPALA KARTU (Badge & Kategori)
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'card-header';
+                const headerDiv = document.createElement('div'); headerDiv.className = 'card-header';
+                const numberBadge = document.createElement('div'); numberBadge.className = 'number-badge';
+                // Nomor asli disesuaikan dengan urutan global
+                const realIndex = startIndex + index + 1; 
+                numberBadge.innerText = item.selesai ? `${realIndex} (Selesai)` : `${realIndex}`;
                 
-                const numberBadge = document.createElement('div');
-                numberBadge.className = 'number-badge';
-                numberBadge.innerText = item.selesai ? `${index + 1} (Selesai)` : `${index + 1}`;
-                
-                const katSelect = document.createElement('select');
-                katSelect.className = 'category-select';
+                const katSelect = document.createElement('select'); katSelect.className = 'category-select';
                 ['Umum', 'Penting', 'Tunda'].forEach(k => {
-                    let opt = document.createElement('option');
-                    opt.value = k; opt.innerText = k;
-                    if(item.kategori === k) opt.selected = true;
-                    katSelect.appendChild(opt);
+                    let opt = document.createElement('option'); opt.value = k; opt.innerText = k;
+                    if(item.kategori === k) opt.selected = true; katSelect.appendChild(opt);
                 });
-                
-                // Ganti Kategori
                 katSelect.onchange = () => {
                     const idx = arrayHasil.findIndex(x => x.id === item.id);
-                    if(idx !== -1) {
-                        arrayHasil[idx].kategori = katSelect.value;
-                        localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                        tampilkanOutput();
-                    }
+                    arrayHasil[idx].kategori = katSelect.value;
+                    localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput();
                 };
 
                 headerDiv.appendChild(numberBadge);
-                if(currentTab !== 'trash') headerDiv.appendChild(katSelect); // Sembunyikan kategori di Trash
+                if(currentTab !== 'trash') headerDiv.appendChild(katSelect);
 
-                // TEKS AREA
                 const textarea = document.createElement('textarea');
                 textarea.value = currentTab === 'trimmed' ? item.trimmedText : item.fullText;
-                
                 if (currentTab === 'full' && item.emailCopied) textarea.classList.add('email-copied');
                 else if (currentTab === 'trimmed' && item.trimmedCopied) textarea.classList.add('trimmed-copied');
                 
                 textarea.addEventListener('input', function() {
                     autoResize(this); 
                     const idx = arrayHasil.findIndex(x => x.id === item.id);
-                    if(idx !== -1) {
-                        if (currentTab === 'trimmed') arrayHasil[idx].trimmedText = this.value;
-                        else arrayHasil[idx].fullText = this.value;
-                        localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                    }
+                    if (currentTab === 'trimmed') arrayHasil[idx].trimmedText = this.value;
+                    else arrayHasil[idx].fullText = this.value;
+                    localStorage.setItem('processedData', JSON.stringify(arrayHasil));
                 });
 
-                // KUMPULAN TOMBOL
-                const actionDiv = document.createElement('div');
-                actionDiv.className = 'card-actions';
+                const actionDiv = document.createElement('div'); actionDiv.className = 'card-actions';
 
                 if (currentTab === 'trash') {
-                    // TAMPILAN TONG SAMPAH
-                    const btnRestore = document.createElement('button');
-                    btnRestore.className = 'btn-restore';
-                    btnRestore.innerText = '♻️ Pulihkan Data';
-                    btnRestore.onclick = () => {
-                        const idx = arrayHasil.findIndex(x => x.id === item.id);
-                        if(idx !== -1) {
-                            arrayHasil[idx].deleted = false;
-                            localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                            tampilkanOutput(); 
-                        }
-                    };
-
-                    const btnDelPerm = document.createElement('button');
-                    btnDelPerm.className = 'btn-del-perm';
-                    btnDelPerm.innerText = '❌ Hapus Permanen';
-                    btnDelPerm.onclick = () => {
-                        if(confirm("Hapus permanen? Data tidak bisa dikembalikan!")) {
-                            const idx = arrayHasil.findIndex(x => x.id === item.id);
-                            if(idx !== -1) {
-                                arrayHasil.splice(idx, 1);
-                                localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                                tampilkanOutput(); 
-                            }
-                        }
-                    };
-                    actionDiv.appendChild(btnRestore);
-                    actionDiv.appendChild(btnDelPerm);
-
+                    const btnRestore = document.createElement('button'); btnRestore.className = 'btn-restore'; btnRestore.innerText = '♻️ Pulihkan';
+                    btnRestore.onclick = () => { arrayHasil.find(x => x.id === item.id).deleted = false; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
+                    const btnDelPerm = document.createElement('button'); btnDelPerm.className = 'btn-del-perm'; btnDelPerm.innerText = '❌ Hapus Permanen';
+                    btnDelPerm.onclick = () => { if(confirm("Hapus permanen?")) { arrayHasil.splice(arrayHasil.findIndex(x => x.id === item.id), 1); localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); } };
+                    actionDiv.append(btnRestore, btnDelPerm);
                 } else {
-                    // TAMPILAN NORMAL
-                    const btnCopy = document.createElement('button');
-                    btnCopy.className = 'btn-copy';
-                    btnCopy.innerText = 'Salin';
+                    const btnCopy = document.createElement('button'); btnCopy.className = 'btn-copy'; btnCopy.innerText = 'Salin';
                     if (currentTab === 'trimmed') btnCopy.style.flex = '1 1 100%';
-                    
                     btnCopy.onclick = () => {
-                        textarea.setAttribute('readonly', 'true');
-                        textarea.select();
-                        textarea.setSelectionRange(0, 99999);
-                        try {
-                            document.execCommand('copy');
-                            if (currentTab === 'trimmed') {
-                                textarea.classList.add('trimmed-copied');
-                                const idx = arrayHasil.findIndex(x => x.id === item.id);
-                                if(idx !== -1) {
-                                    arrayHasil[idx].trimmedCopied = true;
-                                    localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                                }
-                            }
-                            btnCopy.innerText = 'Tersalin!';
-                            setTimeout(() => { btnCopy.innerText = 'Salin'; }, 2000);
-                        } catch (err) {}
-                        textarea.removeAttribute('readonly');
-                        window.getSelection().removeAllRanges();
+                        textarea.select(); document.execCommand('copy');
+                        if (currentTab === 'trimmed') { arrayHasil.find(x => x.id === item.id).trimmedCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('trimmed-copied'); }
+                        btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
                     };
 
-                    const btnEmail = document.createElement('button');
-                    btnEmail.className = 'btn-email';
-                    btnEmail.innerHTML = 'Salin Email';
+                    const btnEmail = document.createElement('button'); btnEmail.className = 'btn-email'; btnEmail.innerText = 'Salin Email';
                     btnEmail.onclick = () => {
                         const match = item.fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
                         if (match) {
-                            const tempTextArea = document.createElement("textarea");
-                            tempTextArea.value = match[0];
-                            document.body.appendChild(tempTextArea);
-                            tempTextArea.select();
-                            document.execCommand('copy');
-                            document.body.removeChild(tempTextArea);
-
-                            textarea.classList.add('email-copied');
-                            const idx = arrayHasil.findIndex(x => x.id === item.id);
-                            if(idx !== -1) {
-                                arrayHasil[idx].emailCopied = true;
-                                localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                            }
-                            btnEmail.innerText = 'Tersalin!';
-                            setTimeout(() => { btnEmail.innerHTML = 'Salin Email'; }, 2000);
+                            const t = document.createElement("textarea"); t.value = match[0]; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+                            arrayHasil.find(x => x.id === item.id).emailCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('email-copied');
+                            btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
                         } else alert("Tidak ada email!");
                     };
 
-                    const btnDone = document.createElement('button');
-                    btnDone.className = 'btn-done';
-                    if (item.selesai) {
-                        btnDone.classList.add('active'); btnDone.innerText = 'Batal';
-                    } else {
-                        btnDone.innerText = 'Selesai';
-                    }
-                    btnDone.onclick = () => {
-                        const idx = arrayHasil.findIndex(x => x.id === item.id);
-                        if(idx !== -1) {
-                            arrayHasil[idx].selesai = !arrayHasil[idx].selesai;
-                            localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-                            tampilkanOutput(); 
-                        }
-                    };
+                    const btnDone = document.createElement('button'); btnDone.className = 'btn-done'; btnDone.innerText = item.selesai ? 'Batal' : 'Selesai';
+                    if(item.selesai) btnDone.classList.add('active');
+                    btnDone.onclick = () => { arrayHasil.find(x => x.id === item.id).selesai = !item.selesai; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
 
-                    const btnDelete = document.createElement('button');
-                    btnDelete.className = 'btn-delete';
-                    btnDelete.innerText = 'Hapus';
-                    btnDelete.onclick = () => {
-                        // PINDAHKAN KE TONG SAMPAH
-                        const idx = arrayHasil.findIndex(x => x.id === item.id);
-                        if (idx !== -1) {
-                            arrayHasil[idx].deleted = true; 
-                            localStorage.setItem('processedData', JSON.stringify(arrayHasil)); 
-                            tampilkanOutput(); 
-                        }
-                    };
+                    const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
+                    btnDelete.onclick = () => { arrayHasil.find(x => x.id === item.id).deleted = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
 
-                    actionDiv.appendChild(btnCopy);
-                    if (currentTab === 'full') actionDiv.appendChild(btnEmail);
-                    actionDiv.appendChild(btnDone);
-                    actionDiv.appendChild(btnDelete);
+                    actionDiv.appendChild(btnCopy); if (currentTab === 'full') actionDiv.appendChild(btnEmail);
+                    actionDiv.append(btnDone, btnDelete);
                 }
 
-                card.appendChild(headerDiv);
-                card.appendChild(textarea);
-                card.appendChild(actionDiv);
-                
-                outputArea.appendChild(card);
+                card.append(headerDiv, textarea, actionDiv); outputArea.appendChild(card);
                 setTimeout(() => autoResize(textarea), 0);
             });
-        }
 
-        // === BERSIHKAN SEMUA DATA MENTAH INPUT SAJA ===
-        function bersihkanSemua() {
-            if (confirm("Kosongkan area ketikan mentah?")) {
-                localStorage.removeItem('rawInput');
-                document.getElementById('inputText').value = '';
+            // Tampilkan Tombol Halaman (Pagination) di Bawah
+            if(totalPages > 1) {
+                const btnPrev = document.createElement('button'); btnPrev.className = 'btn-page'; btnPrev.innerText = '⬅️ Sebelumnya';
+                btnPrev.disabled = currentPage === 1;
+                btnPrev.onclick = () => { currentPage--; tampilkanOutput(); window.scrollTo(0, document.querySelector('.tab-menu').offsetTop); };
+                
+                const pageInfo = document.createElement('span'); pageInfo.className = 'page-info';
+                pageInfo.innerText = `Halaman ${currentPage} dari ${totalPages}`;
+
+                const btnNext = document.createElement('button'); btnNext.className = 'btn-page'; btnNext.innerText = 'Selanjutnya ➡️';
+                btnNext.disabled = currentPage === totalPages;
+                btnNext.onclick = () => { currentPage++; tampilkanOutput(); window.scrollTo(0, document.querySelector('.tab-menu').offsetTop); };
+
+                paginationControls.append(btnPrev, pageInfo, btnNext);
             }
         }
+
+        // Export/Import
+        function exportData() {
+            const data = localStorage.getItem('processedData'); if (!data || data === "[]") return alert("Kosong!");
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
+            a.download = `Backup_CatatanKu.json`; a.click();
+        }
+        function importData(event) {
+            const reader = new FileReader();
+            reader.onload = e => { localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); tampilkanOutput(); alert('Berhasil dipulihkan!'); };
+            reader.readAsText(event.target.files[0]);
+        }
+        function bersihkanSemua() { if (confirm("Kosongkan kotak ketikan?")) { localStorage.removeItem('rawInput'); document.getElementById('inputText').value = ''; } }
     </script>
 </body>
 </html>
