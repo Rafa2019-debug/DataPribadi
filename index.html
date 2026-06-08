@@ -175,7 +175,6 @@
             }
         };
 
-        // --- SISTEM POP-UP KUSTOM ---
         function showCustomModal(type, title, message, onConfirm) {
             const modal = document.getElementById('customModal');
             const titleEl = document.getElementById('modalTitle');
@@ -215,14 +214,25 @@
             if(type === 'prompt') setTimeout(() => inputEl.focus(), 100);
         }
 
-        // --- ENGINE DATABASE DIRECT ACCESS (ANTI BUG) ---
-        // Fungsi ini bertugas membongkar database dan mengubah item secara langsung agar 100% tersimpan
-        function updateData(id, key, value) {
-            let data = JSON.parse(localStorage.getItem('processedData')) || [];
-            let idx = data.findIndex(x => x.id === id);
+        // --- SISTEM PERBARUAN DATA ANTI-MACET (SUPER FALLBACK) ---
+        // Mencari KTP data dengan ID. Jika ID hilang, cari lewat teks aslinya!
+        function perbaruiDataAman(itemId, itemFullText, aksiObjek) {
+            let semuaData = JSON.parse(localStorage.getItem('processedData')) || [];
+            
+            let idx = semuaData.findIndex(x => String(x.id) === String(itemId));
+            
+            // JIKA ID GAGAL DITEMUKAN (Bug Data Lama), CARI BERDASARKAN TEKS!
+            if (idx === -1) {
+                idx = semuaData.findIndex(x => x.fullText === itemFullText);
+            }
+            
+            // Jika ketemu, eksekusi perubahannya
             if (idx !== -1) {
-                data[idx][key] = value;
-                localStorage.setItem('processedData', JSON.stringify(data));
+                aksiObjek(semuaData[idx]);
+                localStorage.setItem('processedData', JSON.stringify(semuaData));
+                tampilkanOutput();
+            } else {
+                showCustomModal('alert', 'Error', 'Sistem gagal menyinkronkan data ini. Mohon muat ulang (refresh) halaman.');
             }
         }
 
@@ -261,7 +271,6 @@
         function tambahManual() {
             let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || [];
             arrayHasil.unshift({
-                // Menggunakan ID String agar tidak ada bug bentrok angka di memori
                 id: "id_" + Date.now() + "_" + Math.floor(Math.random() * 10000), 
                 fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...",
                 selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
@@ -315,7 +324,7 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterKat = document.getElementById('filterCategory').value;
 
-            // Filter menggunakan logika kebal error
+            // Filter pintar yang mengabaikan item rusak
             let arrayTampil = arrayHasil.filter(item => {
                 let isTrash = item.deleted === true;
                 if (currentTab === 'trash') return isTrash;
@@ -379,10 +388,8 @@
                     if((item.kategori || 'Umum') === k) opt.selected = true; katSelect.appendChild(opt);
                 });
                 
-                // MENGGUNAKAN MESIN DIRECT ACCESS
                 katSelect.onchange = () => {
-                    updateData(item.id, 'kategori', katSelect.value); 
-                    tampilkanOutput();
+                    perbaruiDataAman(item.id, item.fullText, (obj) => { obj.kategori = katSelect.value; });
                 };
 
                 headerDiv.appendChild(numberBadge);
@@ -395,8 +402,10 @@
                 
                 textarea.addEventListener('input', function() {
                     autoResize(this); 
-                    // Simpan ketikan langsung ke database tanpa merestart layar
-                    updateData(item.id, currentTab === 'trimmed' ? 'trimmedText' : 'fullText', this.value);
+                    perbaruiDataAman(item.id, item.fullText, (obj) => { 
+                        if (currentTab === 'trimmed') obj.trimmedText = this.value;
+                        else obj.fullText = this.value;
+                    });
                 });
 
                 const actionDiv = document.createElement('div'); actionDiv.className = 'card-actions';
@@ -404,18 +413,19 @@
                 if (currentTab === 'trash') {
                     const btnRestore = document.createElement('button'); btnRestore.className = 'btn-restore'; btnRestore.innerText = '♻️ Pulihkan';
                     btnRestore.onclick = () => { 
-                        updateData(item.id, 'deleted', false); 
-                        tampilkanOutput(); 
+                        perbaruiDataAman(item.id, item.fullText, (obj) => { obj.deleted = false; });
                     };
                     
                     const btnDelPerm = document.createElement('button'); btnDelPerm.className = 'btn-del-perm'; btnDelPerm.innerText = '❌ Hapus Permanen';
                     btnDelPerm.onclick = () => { 
                         showCustomModal('confirm', 'Hapus Permanen', 'Hapus data ini secara permanen? Data tidak dapat dikembalikan!', () => {
-                            let data = JSON.parse(localStorage.getItem('processedData')) || [];
-                            let targetIdx = data.findIndex(x => x.id === item.id);
+                            let semuaData = JSON.parse(localStorage.getItem('processedData')) || [];
+                            let targetIdx = semuaData.findIndex(x => String(x.id) === String(item.id));
+                            if (targetIdx === -1) targetIdx = semuaData.findIndex(x => x.fullText === item.fullText);
+                            
                             if (targetIdx !== -1) {
-                                data.splice(targetIdx, 1); 
-                                localStorage.setItem('processedData', JSON.stringify(data)); 
+                                semuaData.splice(targetIdx, 1); 
+                                localStorage.setItem('processedData', JSON.stringify(semuaData)); 
                                 tampilkanOutput();
                             }
                         });
@@ -432,7 +442,7 @@
                         document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                         
                         if (currentTab === 'trimmed') { 
-                            updateData(item.id, 'trimmedCopied', true);
+                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.trimmedCopied = true; });
                             textarea.classList.add('trimmed-copied'); 
                         }
                         btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
@@ -446,7 +456,7 @@
                             t.style.position = 'fixed'; t.style.top = '-9999px'; 
                             document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                             
-                            updateData(item.id, 'emailCopied', true);
+                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.emailCopied = true; });
                             textarea.classList.add('email-copied');
                             btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
                         } else {
@@ -454,19 +464,18 @@
                         }
                     };
 
+                    // --- TOMBOL SELESAI ---
                     const btnDone = document.createElement('button'); btnDone.className = 'btn-done'; btnDone.innerText = item.selesai ? 'Batal' : 'Selesai';
                     if(item.selesai) btnDone.classList.add('active');
                     btnDone.onclick = () => { 
-                        updateData(item.id, 'selesai', !item.selesai); 
-                        tampilkanOutput(); 
+                        perbaruiDataAman(item.id, item.fullText, (obj) => { obj.selesai = !obj.selesai; });
                     };
 
+                    // --- TOMBOL HAPUS ---
                     const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
                     btnDelete.onclick = () => { 
                         showCustomModal('confirm', 'Pindahkan ke Sampah', 'Anda yakin ingin memindahkan data ini ke Tong Sampah?', () => {
-                            // MESIN BARU: Dijamin 100% masuk tong sampah tanpa nge-bug!
-                            updateData(item.id, 'deleted', true); 
-                            tampilkanOutput(); 
+                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.deleted = true; });
                         });
                     };
 
