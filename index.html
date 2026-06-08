@@ -50,8 +50,9 @@
         label { font-weight: bold; display: block; margin-bottom: 10px; }
         textarea.main-input {
             width: 100%; height: 120px; padding: 12px; border: 1px solid var(--border-color);
-            border-radius: 6px; resize: vertical; font-size: 14px; background-color: var(--input-bg); color: var(--text-color);
+            border-radius: 6px; resize: vertical; font-size: 14px; background-color: var(--input-bg); color: var(--text-color); outline: none;
         }
+        textarea.main-input:focus { border-color: var(--primary-btn); box-shadow: 0 0 5px rgba(0,123,255,0.3); }
         
         .button-group, .tools-section { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .btn {
@@ -61,8 +62,8 @@
         .btn-process { background-color: var(--primary-btn); flex: 1 1 100%; }
         .btn-clear { background-color: #dc3545; } .btn-backup { background-color: #6f42c1; } .btn-import { background-color: #17a2b8; }
 
-        .search-input { flex: 2 1 200px; padding: 12px; font-size: 15px; border: 2px solid var(--primary-btn); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); }
-        .filter-select { flex: 1 1 120px; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); font-weight: bold; }
+        .search-input { flex: 2 1 200px; padding: 12px; font-size: 15px; border: 2px solid var(--primary-btn); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); outline: none; }
+        .filter-select { flex: 1 1 120px; padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color); font-weight: bold; outline: none; }
         .btn-add-manual { flex: 1 1 120px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; padding: 12px;}
 
         .tab-menu { display: flex; background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -79,9 +80,10 @@
         .card.done { background-color: var(--done-bg); border: 1px solid #28a745; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); }
         .number-badge { font-size: 16px; font-weight: bold; color: var(--badge-color); }
-        .category-select { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); }
+        .category-select { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); outline: none; }
         
-        .card textarea { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); overflow: hidden; resize: none; font-family: monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4; }
+        .card textarea { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); overflow: hidden; resize: none; font-family: monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4; outline: none; }
+        .card textarea:focus { border-color: var(--primary-btn); box-shadow: 0 0 5px rgba(0,123,255,0.3); }
         .card textarea.email-copied { background-color: #fffacc !important; color: #000 !important; border-color: #ffc107 !important; }
         .card textarea.trimmed-copied { background-color: #e6f7ff !important; color: #000 !important; border-color: #007bff !important; }
         
@@ -89,6 +91,16 @@
         .card-actions button { color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; flex: 1 1 calc(50% - 8px); }
         .btn-copy { background-color: #28a745; } .btn-email { background-color: #17a2b8; } .btn-done { background-color: #6c757d; } .btn-done.active { background-color: #ffc107; color: #333; } .btn-delete { background-color: #dc3545; }
         .btn-restore { background-color: #28a745; flex: 1 1 100% !important; } .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
+
+        /* --- DESAIN POP-UP KUSTOM --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(3px); }
+        .modal-box { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 1px solid var(--border-color); }
+        .modal-box h3 { margin-top: 0; color: var(--text-color); font-size: 22px; margin-bottom: 10px; }
+        .modal-box p { color: var(--header-desc); margin-bottom: 20px; font-size: 15px; white-space: pre-wrap; line-height: 1.5; }
+        .modal-box input { width: 100%; padding: 12px; border: 2px solid var(--primary-btn); border-radius: 6px; margin-bottom: 20px; background: var(--input-bg); color: var(--text-color); text-align: center; font-size: 18px; letter-spacing: 2px; outline: none; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal-cancel { flex: 1; padding: 12px; border: none; border-radius: 6px; background: #6c757d; color: white; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .btn-modal-confirm { flex: 1; padding: 12px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; font-size: 15px; }
 
         #importFile { display: none; }
     </style>
@@ -136,6 +148,18 @@
         <div class="output-section" id="outputArea"></div>
     </div>
 
+    <div id="customModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3 id="modalTitle">Konfirmasi</h3>
+            <p id="modalMessage">Pesan...</p>
+            <input type="number" id="modalInput" style="display:none;" placeholder="Masukkan PIN">
+            <div class="modal-actions">
+                <button id="modalBtnCancel" class="btn-modal-cancel">Batal</button>
+                <button id="modalBtnConfirm" class="btn-modal-confirm">Oke</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentTab = 'full';
         let currentPage = 1;
@@ -150,6 +174,57 @@
                 navigator.serviceWorker.register('sw.js').then(() => console.log("PWA Active"));
             }
         };
+
+        // --- SISTEM POP-UP KUSTOM ---
+        function showCustomModal(type, title, message, onConfirm) {
+            const modal = document.getElementById('customModal');
+            const titleEl = document.getElementById('modalTitle');
+            const msgEl = document.getElementById('modalMessage');
+            const inputEl = document.getElementById('modalInput');
+            const btnCancel = document.getElementById('modalBtnCancel');
+            const btnConfirm = document.getElementById('modalBtnConfirm');
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+            inputEl.value = '';
+
+            btnCancel.style.display = 'block';
+            btnConfirm.style.backgroundColor = '#dc3545';
+            btnConfirm.innerText = 'Hapus';
+
+            if (type === 'alert') {
+                inputEl.style.display = 'none';
+                btnCancel.style.display = 'none';
+                btnConfirm.innerText = 'Tutup';
+                btnConfirm.style.backgroundColor = 'var(--primary-btn)';
+                btnConfirm.onclick = () => { modal.style.display = 'none'; if(onConfirm) onConfirm(); };
+            } 
+            else if (type === 'confirm') {
+                inputEl.style.display = 'none';
+                btnCancel.onclick = () => { modal.style.display = 'none'; };
+                btnConfirm.onclick = () => { modal.style.display = 'none'; onConfirm(); };
+            } 
+            else if (type === 'prompt') {
+                inputEl.style.display = 'block';
+                btnConfirm.innerText = 'Lanjutkan';
+                btnCancel.onclick = () => { modal.style.display = 'none'; };
+                btnConfirm.onclick = () => { modal.style.display = 'none'; onConfirm(inputEl.value); };
+            }
+
+            modal.style.display = 'flex';
+            if(type === 'prompt') setTimeout(() => inputEl.focus(), 100);
+        }
+
+        // --- ENGINE DATABASE DIRECT ACCESS (ANTI BUG) ---
+        // Fungsi ini bertugas membongkar database dan mengubah item secara langsung agar 100% tersimpan
+        function updateData(id, key, value) {
+            let data = JSON.parse(localStorage.getItem('processedData')) || [];
+            let idx = data.findIndex(x => x.id === id);
+            if (idx !== -1) {
+                data[idx][key] = value;
+                localStorage.setItem('processedData', JSON.stringify(data));
+            }
+        }
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -186,7 +261,9 @@
         function tambahManual() {
             let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || [];
             arrayHasil.unshift({
-                id: Date.now(), fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...",
+                // Menggunakan ID String agar tidak ada bug bentrok angka di memori
+                id: "id_" + Date.now() + "_" + Math.floor(Math.random() * 10000), 
+                fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...",
                 selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
             });
             localStorage.setItem('processedData', JSON.stringify(arrayHasil));
@@ -214,7 +291,8 @@
                 while(trimmedLines.length > 0 && trimmedLines[trimmedLines.length-1].trim() === '') trimmedLines.pop();
 
                 arrayHasil.push({
-                    id: Date.now() + Math.random(), fullText: fullText, trimmedText: trimmedLines.join('\n'),
+                    id: "id_" + Date.now() + "_" + Math.floor(Math.random() * 10000), 
+                    fullText: fullText, trimmedText: trimmedLines.join('\n'),
                     selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
                 });
             });
@@ -237,9 +315,12 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterKat = document.getElementById('filterCategory').value;
 
+            // Filter menggunakan logika kebal error
             let arrayTampil = arrayHasil.filter(item => {
-                if (currentTab === 'trash') return item.deleted === true;
-                return item.deleted === false && (filterKat === 'Semua' || item.kategori === filterKat);
+                let isTrash = item.deleted === true;
+                if (currentTab === 'trash') return isTrash;
+                let kat = item.kategori || 'Umum';
+                return !isTrash && (filterKat === 'Semua' || kat === filterKat);
             });
 
             updateCounter(arrayTampil.length);
@@ -295,12 +376,13 @@
                 const katSelect = document.createElement('select'); katSelect.className = 'category-select';
                 ['Umum', 'Penting', 'Tunda'].forEach(k => {
                     let opt = document.createElement('option'); opt.value = k; opt.innerText = k;
-                    if(item.kategori === k) opt.selected = true; katSelect.appendChild(opt);
+                    if((item.kategori || 'Umum') === k) opt.selected = true; katSelect.appendChild(opt);
                 });
+                
+                // MENGGUNAKAN MESIN DIRECT ACCESS
                 katSelect.onchange = () => {
-                    const idx = arrayHasil.findIndex(x => x.id === item.id);
-                    arrayHasil[idx].kategori = katSelect.value;
-                    localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput();
+                    updateData(item.id, 'kategori', katSelect.value); 
+                    tampilkanOutput();
                 };
 
                 headerDiv.appendChild(numberBadge);
@@ -313,19 +395,31 @@
                 
                 textarea.addEventListener('input', function() {
                     autoResize(this); 
-                    const idx = arrayHasil.findIndex(x => x.id === item.id);
-                    if (currentTab === 'trimmed') arrayHasil[idx].trimmedText = this.value;
-                    else arrayHasil[idx].fullText = this.value;
-                    localStorage.setItem('processedData', JSON.stringify(arrayHasil));
+                    // Simpan ketikan langsung ke database tanpa merestart layar
+                    updateData(item.id, currentTab === 'trimmed' ? 'trimmedText' : 'fullText', this.value);
                 });
 
                 const actionDiv = document.createElement('div'); actionDiv.className = 'card-actions';
 
                 if (currentTab === 'trash') {
                     const btnRestore = document.createElement('button'); btnRestore.className = 'btn-restore'; btnRestore.innerText = '♻️ Pulihkan';
-                    btnRestore.onclick = () => { arrayHasil.find(x => x.id === item.id).deleted = false; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
+                    btnRestore.onclick = () => { 
+                        updateData(item.id, 'deleted', false); 
+                        tampilkanOutput(); 
+                    };
+                    
                     const btnDelPerm = document.createElement('button'); btnDelPerm.className = 'btn-del-perm'; btnDelPerm.innerText = '❌ Hapus Permanen';
-                    btnDelPerm.onclick = () => { if(confirm("Hapus permanen?")) { arrayHasil.splice(arrayHasil.findIndex(x => x.id === item.id), 1); localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); } };
+                    btnDelPerm.onclick = () => { 
+                        showCustomModal('confirm', 'Hapus Permanen', 'Hapus data ini secara permanen? Data tidak dapat dikembalikan!', () => {
+                            let data = JSON.parse(localStorage.getItem('processedData')) || [];
+                            let targetIdx = data.findIndex(x => x.id === item.id);
+                            if (targetIdx !== -1) {
+                                data.splice(targetIdx, 1); 
+                                localStorage.setItem('processedData', JSON.stringify(data)); 
+                                tampilkanOutput();
+                            }
+                        });
+                    };
                     actionDiv.append(btnRestore, btnDelPerm);
                 } else {
                     
@@ -338,8 +432,7 @@
                         document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                         
                         if (currentTab === 'trimmed') { 
-                            arrayHasil.find(x => x.id === item.id).trimmedCopied = true; 
-                            localStorage.setItem('processedData', JSON.stringify(arrayHasil)); 
+                            updateData(item.id, 'trimmedCopied', true);
                             textarea.classList.add('trimmed-copied'); 
                         }
                         btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
@@ -353,31 +446,34 @@
                             t.style.position = 'fixed'; t.style.top = '-9999px'; 
                             document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                             
-                            arrayHasil.find(x => x.id === item.id).emailCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('email-copied');
+                            updateData(item.id, 'emailCopied', true);
+                            textarea.classList.add('email-copied');
                             btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
-                        } else alert("Tidak ada email!");
+                        } else {
+                            showCustomModal('alert', 'Perhatian', 'Tidak ada alamat email yang ditemukan di data ini.');
+                        }
                     };
 
                     const btnDone = document.createElement('button'); btnDone.className = 'btn-done'; btnDone.innerText = item.selesai ? 'Batal' : 'Selesai';
                     if(item.selesai) btnDone.classList.add('active');
-                    btnDone.onclick = () => { arrayHasil.find(x => x.id === item.id).selesai = !item.selesai; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
+                    btnDone.onclick = () => { 
+                        updateData(item.id, 'selesai', !item.selesai); 
+                        tampilkanOutput(); 
+                    };
 
                     const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
                     btnDelete.onclick = () => { 
-                        // --- GEMBOK KONFIRMASI HAPUS ---
-                        if (confirm("Pindahkan data ini ke Tong Sampah?")) {
-                            arrayHasil.find(x => x.id === item.id).deleted = true; 
-                            localStorage.setItem('processedData', JSON.stringify(arrayHasil)); 
+                        showCustomModal('confirm', 'Pindahkan ke Sampah', 'Anda yakin ingin memindahkan data ini ke Tong Sampah?', () => {
+                            // MESIN BARU: Dijamin 100% masuk tong sampah tanpa nge-bug!
+                            updateData(item.id, 'deleted', true); 
                             tampilkanOutput(); 
-                        }
+                        });
                     };
 
-                    // --- POSISI TOMBOL DITUKAR AGAR HAPUS TIDAK DI BAWAH SALIN EMAIL ---
                     actionDiv.appendChild(btnCopy); 
                     if (currentTab === 'full') actionDiv.appendChild(btnEmail);
-                    
-                    actionDiv.appendChild(btnDelete); // Hapus jadi di bawah Salin
-                    actionDiv.appendChild(btnDone);   // Selesai jadi di bawah Salin Email
+                    actionDiv.appendChild(btnDelete); 
+                    actionDiv.appendChild(btnDone);   
                 }
 
                 card.append(headerDiv, textarea, actionDiv); outputArea.appendChild(card);
@@ -386,21 +482,30 @@
         }
 
         function exportData() {
-            const data = localStorage.getItem('processedData'); if (!data || data === "[]") return alert("Kosong!");
+            const data = localStorage.getItem('processedData'); 
+            if (!data || data === "[]") return showCustomModal('alert', 'Kosong', 'Tidak ada data untuk di-backup!');
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
             a.download = `Backup_CatatanKu.json`; a.click();
         }
         function importData(event) {
             const reader = new FileReader();
-            reader.onload = e => { localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); tampilkanOutput(); alert('Berhasil dipulihkan!'); };
+            reader.onload = e => { 
+                localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); 
+                tampilkanOutput(); 
+                showCustomModal('alert', 'Berhasil', 'Data berhasil dipulihkan dari Backup!'); 
+            };
             reader.readAsText(event.target.files[0]);
         }
         function hapusSemuaData() { 
-            const pin = prompt("PERINGATAN: Tindakan ini akan menghapus SELURUH data Anda secara permanen!\n\nMasukkan PIN '1234' untuk melanjutkan:");
-            if (pin === "1234") {
-                localStorage.removeItem('rawInput'); localStorage.removeItem('processedData');
-                document.getElementById('inputText').value = ''; tampilkanOutput(); alert("Berhasil! Seluruh data telah dikosongkan.");
-            } else if (pin !== null) alert("PIN Salah! Penghapusan data dibatalkan.");
+            showCustomModal('prompt', 'Peringatan Bahaya', "Tindakan ini akan menghapus SELURUH data Anda secara permanen!\n\nMasukkan PIN '1234' untuk melanjutkan:", (pin) => {
+                if (pin === "1234") {
+                    localStorage.removeItem('rawInput'); localStorage.removeItem('processedData');
+                    document.getElementById('inputText').value = ''; tampilkanOutput(); 
+                    showCustomModal('alert', 'Berhasil', 'Seluruh data telah sukses dikosongkan.');
+                } else {
+                    showCustomModal('alert', 'Gagal', 'PIN Salah! Penghapusan data dibatalkan demi keamanan.');
+                }
+            });
         }
     </script>
 </body>
