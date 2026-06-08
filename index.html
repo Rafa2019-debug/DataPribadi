@@ -76,23 +76,22 @@
         .page-box { border: 3px solid var(--text-color); padding: 5px 20px; font-size: 18px; font-weight: bold; border-radius: 4px; color: var(--text-color); letter-spacing: 1px; }
 
         .output-section { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: background-color 0.3s; }
         .card.done { background-color: var(--done-bg); border: 1px solid #28a745; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); }
         .number-badge { font-size: 16px; font-weight: bold; color: var(--badge-color); }
         .category-select { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); outline: none; }
         
-        .card textarea { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); overflow: hidden; resize: none; font-family: monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4; outline: none; }
+        .card textarea { width: 100%; min-height: 120px; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background-color: var(--input-bg); color: var(--text-color); overflow: hidden; resize: none; font-family: monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4; outline: none; transition: background-color 0.3s, border-color 0.3s; }
         .card textarea:focus { border-color: var(--primary-btn); box-shadow: 0 0 5px rgba(0,123,255,0.3); }
         .card textarea.email-copied { background-color: #fffacc !important; color: #000 !important; border-color: #ffc107 !important; }
         .card textarea.trimmed-copied { background-color: #e6f7ff !important; color: #000 !important; border-color: #007bff !important; }
         
         .card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-        .card-actions button { color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; flex: 1 1 calc(50% - 8px); }
+        .card-actions button { color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; flex: 1 1 calc(50% - 8px); transition: background-color 0.2s; }
         .btn-copy { background-color: #28a745; } .btn-email { background-color: #17a2b8; } .btn-done { background-color: #6c757d; } .btn-done.active { background-color: #ffc107; color: #333; } .btn-delete { background-color: #dc3545; }
         .btn-restore { background-color: #28a745; flex: 1 1 100% !important; } .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
 
-        /* --- DESAIN POP-UP KUSTOM --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(3px); }
         .modal-box { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 1px solid var(--border-color); }
         .modal-box h3 { margin-top: 0; color: var(--text-color); font-size: 22px; margin-bottom: 10px; }
@@ -214,25 +213,59 @@
             if(type === 'prompt') setTimeout(() => inputEl.focus(), 100);
         }
 
-        // --- SISTEM PERBARUAN DATA ANTI-MACET (SUPER FALLBACK) ---
-        // Mencari KTP data dengan ID. Jika ID hilang, cari lewat teks aslinya!
-        function perbaruiDataAman(itemId, itemFullText, aksiObjek) {
-            let semuaData = JSON.parse(localStorage.getItem('processedData')) || [];
-            
-            let idx = semuaData.findIndex(x => String(x.id) === String(itemId));
-            
-            // JIKA ID GAGAL DITEMUKAN (Bug Data Lama), CARI BERDASARKAN TEKS!
-            if (idx === -1) {
-                idx = semuaData.findIndex(x => x.fullText === itemFullText);
+        // =========================================================================
+        // MESIN SALIN TERBARU: MODE SILUMAN PENUH (ANTI-GETAR & ANTI-SCROLL)
+        // =========================================================================
+        function salinTeksAman(teks, onSuccess) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(teks).then(onSuccess).catch(() => fallbackSalin(teks, onSuccess));
+            } else {
+                fallbackSalin(teks, onSuccess);
             }
+        }
+
+        function fallbackSalin(teks, onSuccess) {
+            // Kita menggunakan elemen SPAN, BUKAN Textarea, jadi HP tidak akan mengira ini input keyboard
+            const spanSiluman = document.createElement('span');
+            spanSiluman.textContent = teks;
+            spanSiluman.style.whiteSpace = 'pre'; 
+            spanSiluman.style.position = 'fixed'; 
+            spanSiluman.style.top = '-9999px'; // Jauhkan dari pandangan
+            spanSiluman.style.left = '-9999px';
+            spanSiluman.style.opacity = '0';
             
-            // Jika ketemu, eksekusi perubahannya
+            document.body.appendChild(spanSiluman);
+
+            // Menseleksi teks menggunakan sistem Range (tanpa memicu focus layar)
+            const range = document.createRange();
+            range.selectNode(spanSiluman);
+            
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Gagal menyalin:', err);
+            }
+
+            // Bersihkan jejak seleksi
+            selection.removeAllRanges();
+            document.body.removeChild(spanSiluman);
+            
+            onSuccess();
+        }
+        // =========================================================================
+
+        function simpanDataDiamDiam(itemId, itemFullText, aksiObjek) {
+            let semuaData = JSON.parse(localStorage.getItem('processedData')) || [];
+            let idx = semuaData.findIndex(x => String(x.id) === String(itemId));
+            if (idx === -1) idx = semuaData.findIndex(x => x.fullText === itemFullText);
+            
             if (idx !== -1) {
                 aksiObjek(semuaData[idx]);
                 localStorage.setItem('processedData', JSON.stringify(semuaData));
-                tampilkanOutput();
-            } else {
-                showCustomModal('alert', 'Error', 'Sistem gagal menyinkronkan data ini. Mohon muat ulang (refresh) halaman.');
             }
         }
 
@@ -324,7 +357,6 @@
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filterKat = document.getElementById('filterCategory').value;
 
-            // Filter pintar yang mengabaikan item rusak
             let arrayTampil = arrayHasil.filter(item => {
                 let isTrash = item.deleted === true;
                 if (currentTab === 'trash') return isTrash;
@@ -389,7 +421,8 @@
                 });
                 
                 katSelect.onchange = () => {
-                    perbaruiDataAman(item.id, item.fullText, (obj) => { obj.kategori = katSelect.value; });
+                    simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.kategori = katSelect.value; });
+                    tampilkanOutput();
                 };
 
                 headerDiv.appendChild(numberBadge);
@@ -402,7 +435,7 @@
                 
                 textarea.addEventListener('input', function() {
                     autoResize(this); 
-                    perbaruiDataAman(item.id, item.fullText, (obj) => { 
+                    simpanDataDiamDiam(item.id, item.fullText, (obj) => { 
                         if (currentTab === 'trimmed') obj.trimmedText = this.value;
                         else obj.fullText = this.value;
                     });
@@ -413,7 +446,8 @@
                 if (currentTab === 'trash') {
                     const btnRestore = document.createElement('button'); btnRestore.className = 'btn-restore'; btnRestore.innerText = '♻️ Pulihkan';
                     btnRestore.onclick = () => { 
-                        perbaruiDataAman(item.id, item.fullText, (obj) => { obj.deleted = false; });
+                        simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.deleted = false; });
+                        tampilkanOutput(); 
                     };
                     
                     const btnDelPerm = document.createElement('button'); btnDelPerm.className = 'btn-del-perm'; btnDelPerm.innerText = '❌ Hapus Permanen';
@@ -436,46 +470,54 @@
                     const btnCopy = document.createElement('button'); btnCopy.className = 'btn-copy'; btnCopy.innerText = 'Salin';
                     if (currentTab === 'trimmed') btnCopy.style.flex = '1 1 100%';
                     btnCopy.onclick = () => {
-                        const t = document.createElement("textarea"); 
-                        t.value = currentTab === 'trimmed' ? item.trimmedText : item.fullText; 
-                        t.style.position = 'fixed'; t.style.top = '-9999px'; 
-                        document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
-                        
-                        if (currentTab === 'trimmed') { 
-                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.trimmedCopied = true; });
-                            textarea.classList.add('trimmed-copied'); 
-                        }
-                        btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
+                        let teks = currentTab === 'trimmed' ? item.trimmedText : item.fullText;
+                        salinTeksAman(teks, () => {
+                            if (currentTab === 'trimmed') { 
+                                simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.trimmedCopied = true; });
+                                textarea.classList.add('trimmed-copied'); 
+                            }
+                            btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
+                        });
                     };
 
                     const btnEmail = document.createElement('button'); btnEmail.className = 'btn-email'; btnEmail.innerText = 'Salin Email';
                     btnEmail.onclick = () => {
                         const match = item.fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
                         if (match) {
-                            const t = document.createElement("textarea"); t.value = match[0]; 
-                            t.style.position = 'fixed'; t.style.top = '-9999px'; 
-                            document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
-                            
-                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.emailCopied = true; });
-                            textarea.classList.add('email-copied');
-                            btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
+                            salinTeksAman(match[0], () => {
+                                simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.emailCopied = true; });
+                                textarea.classList.add('email-copied');
+                                btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
+                            });
                         } else {
                             showCustomModal('alert', 'Perhatian', 'Tidak ada alamat email yang ditemukan di data ini.');
                         }
                     };
 
-                    // --- TOMBOL SELESAI ---
                     const btnDone = document.createElement('button'); btnDone.className = 'btn-done'; btnDone.innerText = item.selesai ? 'Batal' : 'Selesai';
                     if(item.selesai) btnDone.classList.add('active');
                     btnDone.onclick = () => { 
-                        perbaruiDataAman(item.id, item.fullText, (obj) => { obj.selesai = !obj.selesai; });
+                        simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.selesai = !obj.selesai; });
+                        
+                        item.selesai = !item.selesai;
+                        if (item.selesai) {
+                            card.classList.add('done');
+                            btnDone.classList.add('active');
+                            btnDone.innerText = 'Batal';
+                            numberBadge.innerText = `${realIndex} (Selesai)`;
+                        } else {
+                            card.classList.remove('done');
+                            btnDone.classList.remove('active');
+                            btnDone.innerText = 'Selesai';
+                            numberBadge.innerText = `${realIndex}`;
+                        }
                     };
 
-                    // --- TOMBOL HAPUS ---
                     const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
                     btnDelete.onclick = () => { 
                         showCustomModal('confirm', 'Pindahkan ke Sampah', 'Anda yakin ingin memindahkan data ini ke Tong Sampah?', () => {
-                            perbaruiDataAman(item.id, item.fullText, (obj) => { obj.deleted = true; });
+                            simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.deleted = true; });
+                            tampilkanOutput(); 
                         });
                     };
 
