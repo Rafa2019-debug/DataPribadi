@@ -259,25 +259,21 @@
             const totalPages = Math.ceil(arrayTampil.length / itemsPerPage);
             if(currentPage > totalPages && totalPages > 0) currentPage = totalPages;
             
-            // --- RENDER PAGINATION DENGAN FORMAT (1 / 23) ---
             if(totalPages > 1) {
                 const btnPrev = document.createElement('button'); 
                 btnPrev.className = 'btn-arrow'; 
                 btnPrev.innerHTML = '&#10094;'; 
                 btnPrev.disabled = currentPage === 1;
-                // Scroll otomatis DIHAPUS agar layar tetap diam saat diklik
                 btnPrev.onclick = () => { currentPage--; tampilkanOutput(); };
                 
                 const pageBox = document.createElement('div'); 
                 pageBox.className = 'page-box';
-                // Ini memunculkan "Halaman / Total Halaman"
                 pageBox.innerText = `${currentPage} / ${totalPages}`;
 
                 const btnNext = document.createElement('button'); 
                 btnNext.className = 'btn-arrow'; 
                 btnNext.innerHTML = '&#10095;'; 
                 btnNext.disabled = currentPage === totalPages;
-                // Scroll otomatis DIHAPUS agar layar tetap diam saat diklik
                 btnNext.onclick = () => { currentPage++; tampilkanOutput(); };
 
                 paginationControls.append(btnPrev, pageBox, btnNext);
@@ -332,11 +328,21 @@
                     btnDelPerm.onclick = () => { if(confirm("Hapus permanen?")) { arrayHasil.splice(arrayHasil.findIndex(x => x.id === item.id), 1); localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); } };
                     actionDiv.append(btnRestore, btnDelPerm);
                 } else {
+                    
+                    // --- TRIK KOTAK SILUMAN UNTUK TOMBOL SALIN (ANTI KEYBOARD MUNCUL) ---
                     const btnCopy = document.createElement('button'); btnCopy.className = 'btn-copy'; btnCopy.innerText = 'Salin';
                     if (currentTab === 'trimmed') btnCopy.style.flex = '1 1 100%';
                     btnCopy.onclick = () => {
-                        textarea.select(); document.execCommand('copy');
-                        if (currentTab === 'trimmed') { arrayHasil.find(x => x.id === item.id).trimmedCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('trimmed-copied'); }
+                        const t = document.createElement("textarea"); 
+                        t.value = currentTab === 'trimmed' ? item.trimmedText : item.fullText; 
+                        t.style.position = 'fixed'; t.style.top = '-9999px'; // Sembunyikan dari layar
+                        document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+                        
+                        if (currentTab === 'trimmed') { 
+                            arrayHasil.find(x => x.id === item.id).trimmedCopied = true; 
+                            localStorage.setItem('processedData', JSON.stringify(arrayHasil)); 
+                            textarea.classList.add('trimmed-copied'); 
+                        }
                         btnCopy.innerText = 'Tersalin!'; setTimeout(() => btnCopy.innerText = 'Salin', 2000);
                     };
 
@@ -344,7 +350,10 @@
                     btnEmail.onclick = () => {
                         const match = item.fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
                         if (match) {
-                            const t = document.createElement("textarea"); t.value = match[0]; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+                            const t = document.createElement("textarea"); t.value = match[0]; 
+                            t.style.position = 'fixed'; t.style.top = '-9999px'; // Sembunyikan dari layar
+                            document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
+                            
                             arrayHasil.find(x => x.id === item.id).emailCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('email-copied');
                             btnEmail.innerText = 'Tersalin!'; setTimeout(() => btnEmail.innerText = 'Salin Email', 2000);
                         } else alert("Tidak ada email!");
