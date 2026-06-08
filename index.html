@@ -329,13 +329,12 @@
                     actionDiv.append(btnRestore, btnDelPerm);
                 } else {
                     
-                    // --- TRIK KOTAK SILUMAN UNTUK TOMBOL SALIN (ANTI KEYBOARD MUNCUL) ---
                     const btnCopy = document.createElement('button'); btnCopy.className = 'btn-copy'; btnCopy.innerText = 'Salin';
                     if (currentTab === 'trimmed') btnCopy.style.flex = '1 1 100%';
                     btnCopy.onclick = () => {
                         const t = document.createElement("textarea"); 
                         t.value = currentTab === 'trimmed' ? item.trimmedText : item.fullText; 
-                        t.style.position = 'fixed'; t.style.top = '-9999px'; // Sembunyikan dari layar
+                        t.style.position = 'fixed'; t.style.top = '-9999px'; 
                         document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                         
                         if (currentTab === 'trimmed') { 
@@ -351,7 +350,7 @@
                         const match = item.fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
                         if (match) {
                             const t = document.createElement("textarea"); t.value = match[0]; 
-                            t.style.position = 'fixed'; t.style.top = '-9999px'; // Sembunyikan dari layar
+                            t.style.position = 'fixed'; t.style.top = '-9999px'; 
                             document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t);
                             
                             arrayHasil.find(x => x.id === item.id).emailCopied = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); textarea.classList.add('email-copied');
@@ -364,10 +363,21 @@
                     btnDone.onclick = () => { arrayHasil.find(x => x.id === item.id).selesai = !item.selesai; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
 
                     const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
-                    btnDelete.onclick = () => { arrayHasil.find(x => x.id === item.id).deleted = true; localStorage.setItem('processedData', JSON.stringify(arrayHasil)); tampilkanOutput(); };
+                    btnDelete.onclick = () => { 
+                        // --- GEMBOK KONFIRMASI HAPUS ---
+                        if (confirm("Pindahkan data ini ke Tong Sampah?")) {
+                            arrayHasil.find(x => x.id === item.id).deleted = true; 
+                            localStorage.setItem('processedData', JSON.stringify(arrayHasil)); 
+                            tampilkanOutput(); 
+                        }
+                    };
 
-                    actionDiv.appendChild(btnCopy); if (currentTab === 'full') actionDiv.appendChild(btnEmail);
-                    actionDiv.append(btnDone, btnDelete);
+                    // --- POSISI TOMBOL DITUKAR AGAR HAPUS TIDAK DI BAWAH SALIN EMAIL ---
+                    actionDiv.appendChild(btnCopy); 
+                    if (currentTab === 'full') actionDiv.appendChild(btnEmail);
+                    
+                    actionDiv.appendChild(btnDelete); // Hapus jadi di bawah Salin
+                    actionDiv.appendChild(btnDone);   // Selesai jadi di bawah Salin Email
                 }
 
                 card.append(headerDiv, textarea, actionDiv); outputArea.appendChild(card);
