@@ -92,6 +92,7 @@
         .btn-copy { background-color: #28a745; } .btn-email { background-color: #17a2b8; } .btn-done { background-color: #6c757d; } .btn-done.active { background-color: #ffc107; color: #333; } .btn-delete { background-color: #dc3545; }
         .btn-restore { background-color: #28a745; flex: 1 1 100% !important; } .btn-del-perm { background-color: #dc3545; flex: 1 1 100% !important; }
 
+        /* --- DESAIN POP-UP KUSTOM --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(3px); }
         .modal-box { background: var(--card-bg); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; border: 1px solid var(--border-color); }
         .modal-box h3 { margin-top: 0; color: var(--text-color); font-size: 22px; margin-bottom: 10px; }
@@ -213,9 +214,7 @@
             if(type === 'prompt') setTimeout(() => inputEl.focus(), 100);
         }
 
-        // =========================================================================
-        // MESIN SALIN TERBARU: MODE SILUMAN PENUH (ANTI-GETAR & ANTI-SCROLL)
-        // =========================================================================
+        // --- SISTEM SALIN SILUMAN PENUH ---
         function salinTeksAman(teks, onSuccess) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(teks).then(onSuccess).catch(() => fallbackSalin(teks, onSuccess));
@@ -225,38 +224,25 @@
         }
 
         function fallbackSalin(teks, onSuccess) {
-            // Kita menggunakan elemen SPAN, BUKAN Textarea, jadi HP tidak akan mengira ini input keyboard
             const spanSiluman = document.createElement('span');
             spanSiluman.textContent = teks;
             spanSiluman.style.whiteSpace = 'pre'; 
             spanSiluman.style.position = 'fixed'; 
-            spanSiluman.style.top = '-9999px'; // Jauhkan dari pandangan
+            spanSiluman.style.top = '-9999px'; 
             spanSiluman.style.left = '-9999px';
             spanSiluman.style.opacity = '0';
             
             document.body.appendChild(spanSiluman);
 
-            // Menseleksi teks menggunakan sistem Range (tanpa memicu focus layar)
             const range = document.createRange();
             range.selectNode(spanSiluman);
-            
             const selection = window.getSelection();
             selection.removeAllRanges();
             selection.addRange(range);
 
-            try {
-                document.execCommand('copy');
-            } catch (err) {
-                console.error('Gagal menyalin:', err);
-            }
-
-            // Bersihkan jejak seleksi
-            selection.removeAllRanges();
-            document.body.removeChild(spanSiluman);
-            
-            onSuccess();
+            try { document.execCommand('copy'); } catch (err) {}
+            selection.removeAllRanges(); document.body.removeChild(spanSiluman); onSuccess();
         }
-        // =========================================================================
 
         function simpanDataDiamDiam(itemId, itemFullText, aksiObjek) {
             let semuaData = JSON.parse(localStorage.getItem('processedData')) || [];
@@ -269,50 +255,17 @@
             }
         }
 
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+        document.getElementById('inputText').addEventListener('input', function() { localStorage.setItem('rawInput', this.value); });
+        document.getElementById('searchInput').addEventListener('input', () => { currentPage = 1; tampilkanOutput(); });
+        function switchTab(tab) { currentTab = tab; currentPage = 1; document.getElementById('btn-tab-full').classList.toggle('active', tab === 'full'); document.getElementById('btn-tab-trimmed').classList.toggle('active', tab === 'trimmed'); document.getElementById('btn-tab-trash').classList.toggle('active', tab === 'trash'); tampilkanOutput(); }
+        function autoResize(textarea) { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; }
+        function updateCounter(total) { document.getElementById('dataCounter').innerText = `📊 Total: ${total} Data`; }
+        function tambahManual() { let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || []; arrayHasil.unshift({ id: "id_" + Date.now() + "_" + Math.floor(Math.random() * 10000), fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...", selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false }); localStorage.setItem('processedData', JSON.stringify(arrayHasil)); currentPage = 1; tampilkanOutput(); }
 
-        document.getElementById('inputText').addEventListener('input', function() {
-            localStorage.setItem('rawInput', this.value);
-        });
-
-        document.getElementById('searchInput').addEventListener('input', () => {
-            currentPage = 1;
-            tampilkanOutput();
-        });
-
-        function switchTab(tab) {
-            currentTab = tab;
-            currentPage = 1; 
-            document.getElementById('btn-tab-full').classList.toggle('active', tab === 'full');
-            document.getElementById('btn-tab-trimmed').classList.toggle('active', tab === 'trimmed');
-            document.getElementById('btn-tab-trash').classList.toggle('active', tab === 'trash');
-            tampilkanOutput();
-        }
-
-        function autoResize(textarea) {
-            textarea.style.height = 'auto'; 
-            textarea.style.height = textarea.scrollHeight + 'px'; 
-        }
-
-        function updateCounter(total) {
-            document.getElementById('dataCounter').innerText = `📊 Total: ${total} Data`;
-        }
-
-        function tambahManual() {
-            let arrayHasil = JSON.parse(localStorage.getItem('processedData')) || [];
-            arrayHasil.unshift({
-                id: "id_" + Date.now() + "_" + Math.floor(Math.random() * 10000), 
-                fullText: "DATA BARU\nKetik di sini...", trimmedText: "DATA BARU\nKetik di sini...",
-                selesai: false, emailCopied: false, trimmedCopied: false, kategori: 'Umum', deleted: false
-            });
-            localStorage.setItem('processedData', JSON.stringify(arrayHasil));
-            currentPage = 1; 
-            tampilkanOutput();
-        }
-
+        // =========================================================================
+        // MESIN PEMOTONG BARU: BERHENTI SETELAH BARIS N/A
+        // =========================================================================
         function prosesData() {
             const rawText = document.getElementById('inputText').value;
             const blocks = rawText.split(/\[[^\]]+\]\s*[^:]+:\s*/).filter(b => b.trim() !== '');
@@ -325,11 +278,21 @@
                 let stopAdding = false;
                 
                 for(let i = 0; i < lines.length; i++) {
+                    // Jaga-jaga: hentikan di baris email JIKA ketemu email duluan
                     if (/\S+@\S+\.\S+/.test(lines[i])) stopAdding = true;
-                    if (stopAdding) continue;
+                    
+                    if (stopAdding) continue; // Skip baris-baris sisanya ke bawah
+                    
+                    // Masukkan baris ke dalam teks potongan (NIK tetap dipotong 6 digit)
                     trimmedLines.push(/^\d{16}$/.test(lines[i].trim()) ? lines[i].trim().substring(0, 6) : lines[i]);
+                    
+                    // KUNCI UTAMA: Hentikan penambahan SETELAH baris yang mengandung 'N/A' masuk
+                    if (lines[i].toUpperCase().includes('N/A')) {
+                        stopAdding = true;
+                    }
                 }
 
+                // Bersihkan baris kosong di bagian paling bawah
                 while(trimmedLines.length > 0 && trimmedLines[trimmedLines.length-1].trim() === '') trimmedLines.pop();
 
                 arrayHasil.push({
@@ -382,22 +345,9 @@
             if(currentPage > totalPages && totalPages > 0) currentPage = totalPages;
             
             if(totalPages > 1) {
-                const btnPrev = document.createElement('button'); 
-                btnPrev.className = 'btn-arrow'; 
-                btnPrev.innerHTML = '&#10094;'; 
-                btnPrev.disabled = currentPage === 1;
-                btnPrev.onclick = () => { currentPage--; tampilkanOutput(); };
-                
-                const pageBox = document.createElement('div'); 
-                pageBox.className = 'page-box';
-                pageBox.innerText = `${currentPage} / ${totalPages}`;
-
-                const btnNext = document.createElement('button'); 
-                btnNext.className = 'btn-arrow'; 
-                btnNext.innerHTML = '&#10095;'; 
-                btnNext.disabled = currentPage === totalPages;
-                btnNext.onclick = () => { currentPage++; tampilkanOutput(); };
-
+                const btnPrev = document.createElement('button'); btnPrev.className = 'btn-arrow'; btnPrev.innerHTML = '&#10094;'; btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { currentPage--; tampilkanOutput(); };
+                const pageBox = document.createElement('div'); pageBox.className = 'page-box'; pageBox.innerText = `${currentPage} / ${totalPages}`;
+                const btnNext = document.createElement('button'); btnNext.className = 'btn-arrow'; btnNext.innerHTML = '&#10095;'; btnNext.disabled = currentPage === totalPages; btnNext.onclick = () => { currentPage++; tampilkanOutput(); };
                 paginationControls.append(btnPrev, pageBox, btnNext);
             }
 
@@ -466,7 +416,6 @@
                     };
                     actionDiv.append(btnRestore, btnDelPerm);
                 } else {
-                    
                     const btnCopy = document.createElement('button'); btnCopy.className = 'btn-copy'; btnCopy.innerText = 'Salin';
                     if (currentTab === 'trimmed') btnCopy.style.flex = '1 1 100%';
                     btnCopy.onclick = () => {
@@ -498,19 +447,9 @@
                     if(item.selesai) btnDone.classList.add('active');
                     btnDone.onclick = () => { 
                         simpanDataDiamDiam(item.id, item.fullText, (obj) => { obj.selesai = !obj.selesai; });
-                        
                         item.selesai = !item.selesai;
-                        if (item.selesai) {
-                            card.classList.add('done');
-                            btnDone.classList.add('active');
-                            btnDone.innerText = 'Batal';
-                            numberBadge.innerText = `${realIndex} (Selesai)`;
-                        } else {
-                            card.classList.remove('done');
-                            btnDone.classList.remove('active');
-                            btnDone.innerText = 'Selesai';
-                            numberBadge.innerText = `${realIndex}`;
-                        }
+                        if (item.selesai) { card.classList.add('done'); btnDone.classList.add('active'); btnDone.innerText = 'Batal'; numberBadge.innerText = `${realIndex} (Selesai)`; } 
+                        else { card.classList.remove('done'); btnDone.classList.remove('active'); btnDone.innerText = 'Selesai'; numberBadge.innerText = `${realIndex}`; }
                     };
 
                     const btnDelete = document.createElement('button'); btnDelete.className = 'btn-delete'; btnDelete.innerText = 'Hapus';
@@ -532,32 +471,9 @@
             });
         }
 
-        function exportData() {
-            const data = localStorage.getItem('processedData'); 
-            if (!data || data === "[]") return showCustomModal('alert', 'Kosong', 'Tidak ada data untuk di-backup!');
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"}));
-            a.download = `Backup_CatatanKu.json`; a.click();
-        }
-        function importData(event) {
-            const reader = new FileReader();
-            reader.onload = e => { 
-                localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); 
-                tampilkanOutput(); 
-                showCustomModal('alert', 'Berhasil', 'Data berhasil dipulihkan dari Backup!'); 
-            };
-            reader.readAsText(event.target.files[0]);
-        }
-        function hapusSemuaData() { 
-            showCustomModal('prompt', 'Peringatan Bahaya', "Tindakan ini akan menghapus SELURUH data Anda secara permanen!\n\nMasukkan PIN '1234' untuk melanjutkan:", (pin) => {
-                if (pin === "1234") {
-                    localStorage.removeItem('rawInput'); localStorage.removeItem('processedData');
-                    document.getElementById('inputText').value = ''; tampilkanOutput(); 
-                    showCustomModal('alert', 'Berhasil', 'Seluruh data telah sukses dikosongkan.');
-                } else {
-                    showCustomModal('alert', 'Gagal', 'PIN Salah! Penghapusan data dibatalkan demi keamanan.');
-                }
-            });
-        }
+        function exportData() { const data = localStorage.getItem('processedData'); if (!data || data === "[]") return showCustomModal('alert', 'Kosong', 'Tidak ada data untuk di-backup!'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type: "application/json"})); a.download = `Backup_CatatanKu.json`; a.click(); }
+        function importData(event) { const reader = new FileReader(); reader.onload = e => { localStorage.setItem('processedData', JSON.stringify(JSON.parse(e.target.result))); tampilkanOutput(); showCustomModal('alert', 'Berhasil', 'Data berhasil dipulihkan dari Backup!'); }; reader.readAsText(event.target.files[0]); }
+        function hapusSemuaData() { showCustomModal('prompt', 'Peringatan Bahaya', "Tindakan ini akan menghapus SELURUH data Anda secara permanen!\n\nMasukkan PIN '1234' untuk melanjutkan:", (pin) => { if (pin === "1234") { localStorage.removeItem('rawInput'); localStorage.removeItem('processedData'); document.getElementById('inputText').value = ''; tampilkanOutput(); showCustomModal('alert', 'Berhasil', 'Seluruh data telah sukses dikosongkan.'); } else { showCustomModal('alert', 'Gagal', 'PIN Salah! Penghapusan data dibatalkan demi keamanan.'); } }); }
     </script>
 </body>
 </html>
